@@ -9,32 +9,34 @@ function App() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    settingNumber(game, true);
+    let tempGame = getMetrix(game)
+    settingNumber(tempGame, true);  
   }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", keyHandler);
+    return () => document.removeEventListener("keydown", keyHandler);
+  });
 
   useEffect(() => {
     checkWinGame();
     checkGameOver();
+
   }, [game]);
 
   useEffect(() => {
     if (status) {
-      alert(status);
+      alert(status)
       resetGame();
     }
   }, [status]);
 
   const resetGame = () => {
-    // console.log("reset game")
+    let tempGame = getMetrix(Array(length).fill(Array(length).fill(0)))
     setStatus(null);
-    setGame(Array(length).fill(Array(length).fill(0)));
-    settingNumber(Array(length).fill(Array(length).fill(0)), true);
+    settingNumber(tempGame , true);
     setScore(0);
   };
-  useEffect(() => {
-    document.addEventListener("keydown", keyHandler);
-    return () => document.removeEventListener("keydown", keyHandler);
-  });
 
   const keyHandler = (e) => {
     switch (e.key) {
@@ -56,13 +58,14 @@ function App() {
   };
 
   const leftTransformation = (addScore) => {
-    let tempGame = getMetrix();
+    let tempGame = getMetrix(game);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
     return tempGame;
   };
+
   const rightTransformation = (addScore) => {
-    let tempGame = getMetrix();
+    let tempGame = getMetrix(game);
     tempGame = moveMetrixLeft(tempGame);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
@@ -70,7 +73,7 @@ function App() {
     return tempGame;
   };
   const topTransformation = (addScore) => {
-    let tempGame = getMetrix();
+    let tempGame = getMetrix(game);
     tempGame = moveMetrixForUpOrDown(tempGame);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
@@ -79,7 +82,7 @@ function App() {
   };
 
   const bottomTransformation = (addScore) => {
-    let tempGame = getMetrix();
+    let tempGame = getMetrix(game);
     tempGame = moveMetrixForUpOrDown(tempGame);
     tempGame = moveMetrixLeft(tempGame);
     tempGame = moveNumbersLeft(tempGame);
@@ -89,43 +92,38 @@ function App() {
     return tempGame;
   };
 
-  const arrowLeftPressed = () => {
-    let tempGame = leftTransformation(true);
+  const afterTransformation =(tempGame)=>{
     setGame(tempGame);
     if (!checkForUpdate(tempGame, game)) {
       settingNumber(tempGame);
     }
+  }
+  const arrowLeftPressed = () => {
+    let tempGame = leftTransformation(true);
+    afterTransformation(tempGame)
+   
   };
   const arrowRightPressed = () => {
     let tempGame = rightTransformation(true);
-    setGame(tempGame);
-    if (!checkForUpdate(tempGame, game)) {
-      settingNumber(tempGame);
-    }
+   afterTransformation(tempGame)
   };
 
   const arrowDownPressed = () => {
     let tempGame = bottomTransformation(true);
 
-    setGame(tempGame);
-    if (!checkForUpdate(tempGame, game)) {
-      settingNumber(tempGame);
-    }
+    afterTransformation(tempGame)
   };
   const arrowUpPressed = () => {
     let tempGame = topTransformation(true);
 
-    setGame(tempGame);
-    if (!checkForUpdate(tempGame, game)) {
-      settingNumber(tempGame);
-    }
+    afterTransformation(tempGame)
   };
+
   const checkGameOver = () => {
     const checkSpace = game.some((row) => {
       return row.some((ele) => ele === 0);
     });
     if (!checkSpace) {
-      console.log("inside");
       if (
         checkForUpdate(game, leftTransformation()) &&
         checkForUpdate(game, rightTransformation()) &&
@@ -136,6 +134,7 @@ function App() {
       }
     }
   };
+
   const checkWinGame = () => {
     for (let row = 0; row < length; row++) {
       for (let col = 0; col < length; col++) {
@@ -197,7 +196,7 @@ function App() {
     return newGame;
   };
 
-  const getMetrix = () => {
+  const getMetrix = (game) => {
     let tempGame = new Array(length);
     for (let i = 0; i < length; i++) {
       tempGame[i] = [...game[i]];
@@ -224,6 +223,8 @@ function App() {
   };
 
   const settingNumber = (tempGame, flag) => {
+        // console.log('tempGame :>> ', tempGame);
+    
     const checkSpace = tempGame.some((row) => {
       return row.some((ele) => ele === 0);
     });
@@ -233,30 +234,17 @@ function App() {
       for (;;) {
         [row, col] = getRandomPos();
         if (tempGame[row][col] === 0) {
+          tempGame[row][col] =2
           break;
         }
-      }
-      const newGame = tempGame.map((array, i) => {
-        if (i === row) {
-          return array.map((ele, i) => {
-            if (i === col) {
-              return 2;
-            } else {
-              return ele;
-            }
-          });
-        } else {
-          return array;
-        }
-      });
-      setGame(newGame);
+      }  
+      setGame(tempGame);
       if (flag) {
-        settingNumber(newGame);
+        settingNumber(tempGame);
         // console.log('tempGame :>> ', tempGame);
       }
     }
   };
-
   return (
     <div className="App">
       {/* {console.log('game', game)} */}
@@ -279,3 +267,5 @@ function App() {
   );
 }
 export default App;
+
+   
