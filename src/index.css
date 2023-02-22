@@ -71,4 +71,17 @@
   gap:2rem;
 }
 
+.toastBody {
+  font-family: "Atlas Grotesk Web", Arial, Helvetica, sans-serif;
+  color: #63a5df; /* #10171D */
+  font-size: 0.875rem !important;
+}
+.toast-message{
+  padding-left: 20px;
+  line-height: 20px;
+  padding: 0px;
+  padding-top: 25px;
+  width: 400px !important;
+  text-align: center;
+} 
 

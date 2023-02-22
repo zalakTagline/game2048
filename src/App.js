@@ -1,15 +1,17 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import "./index.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const length = 4;
   const [game, setGame] = useState(Array(length).fill(Array(length).fill(0)));
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState({type :"",msg:""});
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    let tempGame = getMetrix(game)
+    let tempGame = getMatrix(game)
     settingNumber(tempGame, true);  
   }, []);
 
@@ -25,76 +27,85 @@ function App() {
   }, [game]);
 
   useEffect(() => {
-    if (status) {
-      alert(status)
-      resetGame();
+    if (status.msg) {
+      console.log('status :>> ', status);
+     
+      toast[status.type](status.msg)
+      setTimeout(()=>resetGame(),3000)
+      // resetGame();
     }
   }, [status]);
 
   const resetGame = () => {
-    let tempGame = getMetrix(Array(length).fill(Array(length).fill(0)))
-    setStatus(null);
+    let tempGame = getMatrix(Array(length).fill(Array(length).fill(0)))
+    setStatus({type:'' ,msg:''});
     settingNumber(tempGame , true);
     setScore(0);
   };
 
   const keyHandler = (e) => {
-    switch (e.key) {
-      case "ArrowLeft":
-        arrowLeftPressed();
-        break;
-      case "ArrowRight":
-        arrowRightPressed();
-        break;
-      case "ArrowUp":
-        arrowUpPressed();
-        break;
-      case "ArrowDown":
-        arrowDownPressed();
-        break;
-      default:
-        console.log("e.key :>> ", e.key);
+    console.log({status})
+    if(!status.msg){
+      switch (e.key) {
+        case "ArrowLeft":
+          arrowLeftPressed();
+          break;
+        case "ArrowRight":
+          arrowRightPressed();
+          break;
+        case "ArrowUp":
+          arrowUpPressed();
+          break;
+        case "ArrowDown":
+          arrowDownPressed();
+          break;
+        default:
+          console.log("e.key :>> ", e.key);
+      }
+    }else{
+      console.log("not")
     }
+    
   };
 
   const leftTransformation = (addScore) => {
-    let tempGame = getMetrix(game);
+    let tempGame = getMatrix(game);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
     return tempGame;
   };
 
   const rightTransformation = (addScore) => {
-    let tempGame = getMetrix(game);
-    tempGame = moveMetrixLeft(tempGame);
+    let tempGame = getMatrix(game);
+    tempGame = moveMatrixLeft(tempGame);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
-    tempGame = moveMetrixLeft(tempGame);
+    tempGame = moveMatrixLeft(tempGame);
     return tempGame;
   };
   const topTransformation = (addScore) => {
-    let tempGame = getMetrix(game);
-    tempGame = moveMetrixForUpOrDown(tempGame);
+    let tempGame = getMatrix(game);
+    tempGame = moveMatrixForUpOrDown(tempGame);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
-    tempGame = moveMetrixForUpOrDown(tempGame);
+    tempGame = moveMatrixForUpOrDown(tempGame);
     return tempGame;
   };
 
   const bottomTransformation = (addScore) => {
-    let tempGame = getMetrix(game);
-    tempGame = moveMetrixForUpOrDown(tempGame);
-    tempGame = moveMetrixLeft(tempGame);
+    let tempGame = getMatrix(game);
+    tempGame = moveMatrixForUpOrDown(tempGame);
+    tempGame = moveMatrixLeft(tempGame);
     tempGame = moveNumbersLeft(tempGame);
     tempGame = mergeNumbers(tempGame, addScore);
-    tempGame = moveMetrixLeft(tempGame);
-    tempGame = moveMetrixForUpOrDown(tempGame);
+    tempGame = moveMatrixLeft(tempGame);
+    tempGame = moveMatrixForUpOrDown(tempGame);
     return tempGame;
   };
 
   const afterTransformation =(tempGame)=>{
     setGame(tempGame);
-    if (!checkForUpdate(tempGame, game)) {
+    if (!comparMatrix(tempGame, game)) {
       settingNumber(tempGame);
     }
   }
@@ -125,12 +136,12 @@ function App() {
     });
     if (!checkSpace) {
       if (
-        checkForUpdate(game, leftTransformation()) &&
-        checkForUpdate(game, rightTransformation()) &&
-        checkForUpdate(game, topTransformation()) &&
-        checkForUpdate(game, bottomTransformation())
+        comparMatrix(game, leftTransformation()) &&
+        comparMatrix(game, rightTransformation()) &&
+        comparMatrix(game, topTransformation()) &&
+        comparMatrix(game, bottomTransformation())
       ) {
-        setStatus("gameover");
+        setStatus({type:"error", msg:`Game over  , your score : ${score}`});
       }
     }
   };
@@ -139,7 +150,7 @@ function App() {
     for (let row = 0; row < length; row++) {
       for (let col = 0; col < length; col++) {
         if (game[row][col] === 2048) {
-          setStatus("you won the game");
+          setStatus({type:"success",msg :`you won the game, your score : ${score}`});
         }
       }
     }
@@ -175,8 +186,8 @@ function App() {
     return tempGame;
   };
 
-  const moveMetrixLeft = (tempGame) => {
-    let newGame = getMetrix(tempGame);
+  const moveMatrixLeft = (tempGame) => {
+    let newGame = getMatrix(tempGame);
     for (let row = 0; row < length; row++) {
       for (let col = 0; col < length; col++) {
         newGame[row][col] = tempGame[row][length - col - 1];
@@ -185,18 +196,18 @@ function App() {
     return newGame;
   };
 
-  const moveMetrixForUpOrDown = (tempGame) => {
-    let newGame = getMetrix(tempGame);
+  const moveMatrixForUpOrDown = (tempGame) => {
+    let newGame = getMatrix(tempGame);
     for (let row = 0; row < length; row++) {
       for (let col = 0; col < length; col++) {
         newGame[row][col] = tempGame[col][row];
       }
     }
-    // console.log('moveMetrixForUpOrDown :>> ', newGame);
+    // console.log('moveMatrixForUpOrDown :>> ', newGame);
     return newGame;
   };
 
-  const getMetrix = (game) => {
+  const getMatrix = (game) => {
     let tempGame = new Array(length);
     for (let i = 0; i < length; i++) {
       tempGame[i] = [...game[i]];
@@ -205,7 +216,7 @@ function App() {
     return tempGame;
   };
 
-  const checkForUpdate = (currentGame, prevGame) => {
+  const comparMatrix = (currentGame, prevGame) => {
     for (let row = 0; row < length; row++) {
       for (let col = 0; col < length; col++) {
         if (currentGame[row][col] !== prevGame[row][col]) {
@@ -247,6 +258,7 @@ function App() {
   };
   return (
     <div className="App">
+      <ToastContainer className='toast-message'autoClose={2000} hideProgressBar={true} position="bottom-center" theme="dark"/>
       {/* {console.log('game', game)} */}
       <div className="flex-row">
         <h1>Score : {score}</h1>
