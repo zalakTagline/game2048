@@ -35,25 +35,23 @@ function App() {
       // sliding horizontally
       if (diffX > 0) {
         // swiped left
-        console.log("swiped left");
-        alert("swiped left")
+        // console.log("swiped left");
+        arrowLeftPressed();
       } else {
         // swiped right
-        console.log("swiped right");
-        alert("swiped right")
+        // console.log("swiped right");
+        // alert("swiped right")
+        arrowRightPressed();
       }  
     } else {
       // sliding vertically
       if (diffY > 0) {
         // swiped up
-        console.log("swiped up");
-        alert("swiped up")
+        arrowUpPressed();
 
       } else {
         // swiped down
-        console.log("swiped down");
-        alert("swiped down")
-
+        arrowDownPressed();
       }  
     }
    
