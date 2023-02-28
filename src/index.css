@@ -1,3 +1,7 @@
+body{
+  max-height: 100vh;
+
+}
 .game-container{
   display: grid;
   grid-template-columns: repeat(4,1fr);
@@ -84,4 +88,12 @@
   width: 400px !important;
   text-align: center;
 } 
-
+@media screen and (max-width: 550px) {
+  .game-container{
+  
+    width : 350px;
+    height: 350px;
+   
+  }
+ 
+}
