@@ -36,18 +36,24 @@ function App() {
       if (diffX > 0) {
         // swiped left
         console.log("swiped left");
+        alert("swiped left")
       } else {
         // swiped right
         console.log("swiped right");
+        alert("swiped right")
       }  
     } else {
       // sliding vertically
       if (diffY > 0) {
         // swiped up
         console.log("swiped up");
+        alert("swiped up")
+
       } else {
         // swiped down
         console.log("swiped down");
+        alert("swiped down")
+
       }  
     }
    
